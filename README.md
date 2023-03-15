@@ -1,197 +1,132 @@
-# Pesquisa - Project Hunter
+# Research - Project Hunter
 
-Nesta pesquisa foram investigadas possíveis técnicas de classificação de projetos em categorias baseadas no título e descrição dos projetos. Foram investigadas majoritariamente técnicas de processamento de texto com IAs (NLP -- natural language processing).
+In this research the problem of classifying projects into categories based on title and description was approached and techniques to solve the problem were investigated. The main technology used was NLP -- natural language processing.
 
-## Metodologia
+Also, we use results from the previous [experiments](old/README.md). Mainly:
+- Using the project's title and description combined gave the best results.
+- Using fine-tuned pre-trained neural networks gave the best results.
+- To showcase the model's potential, the dataset should be as balanced as possible.
 
-Primeiro, foi realizada uma pesquisa ampla para responder a algumas perguntas como:
-- Quais técnicas, envolvendo ou não IA, são adequadas para o problema?
-- A base de dados tem tamanho suficiente para aplicação de IA?
-- Que tipos de entrada um modelo precisaria para ter bom desempenho?
+## Methodology
 
-Mais adiante, as perguntas serão detalhadas e respondidas. Em seguida, foram elencadas técnicas específicas de IA que se adequariam ao problema. Para cada técnica, foi realizada validação cruzada quando possível para determinar a performance de certas combinações de parâmetros e modelos. A validação cruzada consiste em separar `1` fold do dataset para servir de conjunto de teste e usar os `k-1` folds restantes como o conjunto de treino, em que `k` é o número total de folds. Este procedimento é então repetido de forma que todos os folds individuais sirvam de conjunto de teste uma única vez.
+First, an ample research was made to answer certain questions such as:
+- What techniques, using AI or not, are adequate to solve the problem?
+- Is the dataset sufficiently large for AI applications?
+- What types of input would a model need to achieve good performance?
 
-Por fim, os resultados foram registrados numa tabela e possíveis vias futuras foram analisadas.
+These questions will be detailed and answered later on.
 
-## Experimentos e Resultados
+Then, some AI-based approaches that could solve the problem were selected. For each one, cross-validation was used to determined the performance of certain model and parameter combinations. Cross-validation consists in splitting the dataset in `k` folds and using `k-1` folds as the training set and `1` fold as a test set. Then a different fold is picked as a test set until all folds were test sets only once.
 
-As perguntas realizadas (e suas respostas) seguem abaixo:
+After that, a model was trained using the best parameters and tested against a test split of the dataset.
 
-1. Quais as soluções viáveis com e sem IA?
-- Soluções sem IA envolveriam bastante processamento manual dos textos e modelamento estatístico do problema, e identificamos que não seria um caminho muito viável. Existem várias possíveis soluções com IA, e algumas foram elencadas para teste: 1) fine-tuning de modelo pré-treinado para geração de embeddings (vetorização) a partir do texto completo, 2) separação manual do texto em tokens (palavras ou conjuntos de palavras) para vetorização e 3) utilização da ferramenta ChatGPT.
+Finally, results were registered on tables and possible future research was discussed.
 
-2. Quais ferramentas seriam necessárias? Quais já estão prontas? Qual o custo? É necessário ter a tag? Dá para ir direto para a página?
-- Para uma solução completa, seriam usadas ferramentas como Snowflake para hospedagem do banco de dados, Streamlit para apresentação dos resultados, AWS para hospedagem dos modelos e serviçoes de crawling e scraping e TensorFlow ou PyTorch como frameworks para treinamento e uso dos modelos. Snowflake e AWS seriam soluções pagas. Teriam de ser realizados testes futuros para utilizar uma página inteira como input de um modelo; nesta pesquisa foram realizados somente testes com títulos e descrições de projetos já existentes em uma base de dados.
+## Experiments and Results
 
-3. Quais métodos estatísticos seriam importantes para redução campo amostral?
-- Quantos menos palavras e quanto mais significativas as palavras que descrevem um projeto, melhor. Algo entre 5 e 50 tags poderiam ser geradas inicialmente e variáveis linearmente dependentes podem ser eliminadas com auxílio da correlação de Pearson, por exemplo.
+Below are the questions made (and their answers):
 
-4. Qual número mínimo de linhas o banco de dados precisa ter para as primeiras experimentações em: financiamento/impacto/categoria/cidade/ano/subcategoria?
-- Esta é a pergunta mais complexa, uma vez que não existe resposta direta. No fundo, a quantidade de linhas depende do modelo estatístico que rege que o problema. Modelo este que não conhecemos e cuja modelagem é de alta dificuldade. Se o modelo for simples, podemos usar poucas features e relativamente poucas linhas, mas sendo um problema complexo, e fazendo-se o uso de IA, é necessário um banco grande. Duas estimativas empíricas foram elencadas: 5000 amostras por classe (baseado no livro [Deep Learning](https://www.deeplearningbook.org/)) ou 10x o número de graus de liberdade (parâmetros treináveis) do modelo. Esta última é mais incerta porque o modelo utilizado no fim das contas depende da complexidade estatística do problema, conforme dito antes. Foi chegada à conclusão de que pelo menos 1000 amostras no banco seria adequado para um teste inicial de ferramentas de IA.
+1. What are the viable solutions, with or without AI?
+- Solutions without AI would involve plenty of manual processing of the texts and a statistical modelling of the problema, and we realized it would not be a viable path. There are various possible solutions with AI, but only some were considered: 1) fine-tuning a pre-trained model for text embedding extraction and 2) manual splitting of text into tokens for embedding generation and 3) usage of ChatGPT in some way. Please note number 2 was adressed in the previous experiment so it won't be approached here due to it's ineffieciency.
 
-5. Como a base deve ser montada (quantidade de tags, número de categorias) para maximizar a performance?
-- Vide resposta acima.
+2. What tools would be needed? Which are already built? What's the cost? Can a whole page be used as input?
+- For a complete solution, tools such as Snowflake can be used to host the database/dataset, Streamlit can be used to present results, AWS can be used to host models and crawling and scraping services and TensorFlow or PyTorch can be used as frameworks to train and deploy models. Snowflake and AWS are paid services. Future experiments that are out of the scope of this research would have to be made to try and use a whole page as an input to a model; we only experimented with titles and descriptions of projects that are already in a database.
 
-6. Quais outputs são os mais fáceis de serem obtidos?
-- Algumas variáveis são binárias e portanto de menor complexidade, como a classificação de projeto de impacto ou não ou classificação de financiamento social/verde/climático ou não. Outras saídas que podem ser obtidas com facilidade usando scraping são a cidade e o ano do projeto. Categoria e subcategoria do projeto são as saídas de maior complexidade.
+3. What statistical methods would be important to reduce sample space?
+- The less redundant and more significant words and phrases that describe the project the better.  If tags are to be used, something between 5 and 50 could be generated initially and then linearly depend variables could be eliminated using Pearson's correlation, for example.
 
-Com essas respostas, a pesquisa se aprofundou na investigação de técnicas específicas de NLP para geração das categorias.
+4. What is the minimum number of samples a database needs to allow experiments in: finance/impact/area/city/year/subarea?
+- This is the most complex question, seen as there is no simple answer. Deep down, the number of samples depends on the problem's underlying statistical model. We don't know this model, and it certainly is of high complexity. Is the model were to be simple, we could use few features and relatively few samples, but being a complex problem, and making use of AI, a large database is necessary. Two empirical guesses were picked: 1) 5000 samples per class (based on the book [Deep Learning](https://www.deeplearningbook.org/)) or 2) 10x the degrees of freedom (trainable parameters) of the model. The latter is more incertain because the model that ends up being used depends on the statistical complexity of the problem, as was mentioned before. A conclusion was reached that a database of at least 1000 samples would be adequate to run performance tests on AI tools.
 
-### Exploração e limpeza do dataset
+5. How should the database be constructed (number of tags, number of areas) to maximize performance?
+- See answer above.
 
-Linhas com dados faltantes nas colunas de título, descrição ou categoria foram excluídas. Além disso, testes preliminares mostraram que utilizar todas as categorias disponíveis afetava muito negativamente a performance do modelo por conta do severo desbalanceamento. Com isso, os testes dessa pesquisa eliminaram categorias com menos de 20 amostras, restando o seguinte balanceamento de classes:
+6. What outputs are easier to obtain?
+- Some variables are binary and therefore of less complexity, such as high impact project and social/green/climate financing. Other outputs that are easily obtained with scraping are city and year of the project. Area and subarea are outputs of higher complexity.
 
-| area                    |   sample_count |
-|:------------------------|---------------:|
-| waste management        |             66 |
-| water management        |             56 |
-| transport               |             53 |
-| other                   |             37 |
-| public and green spaces |             27 |
-| renewable energy        |             27 |
-| energy efficiency       |             25 |
+With these answers, our research went deeper in investigating NLP techniques for project area prediction.
 
-Foram gerados também um histograma do número de palavras por amostra e um gráfico de frequência das palavras mais recorrentes dos dados como um todo. Para isto, utilizou-se o título + descrição do projeto como input. Segua abaixo os gráficos gerados:
+### Exploring and Cleaning the Dataset
 
-![Histogram of words per sample](imgs/hist.png)
+Samples lacking data in the title, description or area columns were removed. Also, preliminary tests showed that using all available areas hurt performance due to the severe imbalance of classes. So, for our tests, only areas with more than 100 samples were used. Samples with title or description too short were removed. The cleaning resulted in the following sample count for each area:
 
-![Frequency of the 50 most common words in the dataset](imgs/freq.png)
+| area             |   sample_count |
+|:-----------------|---------------:|
+| transport        |            347 |
+| waste management |            315 |
+| water management |            269 |
+| energy effiency  |            228 |
+| renewable energy |            224 |
+| buildings        |            177 |
 
-### Fine-tuning de modelos pré-treinados para extração de features
+Thsi results in a dataset with `1560` samples. We chose to feed the model text in english, so a language classifier was used to determine the non-english samples and Google Cloud Translation API was used to translate the texts to english.
 
-As técnicas utilizadas se baseiam nos tutoriais a seguir:
+The code for processing data can be found in [data_processing_cdp.ipynb](data_processing_cdp.ipynb) for `2022 Full Cities` and [data_processing_es.ipynb](data_processing_es.ipynb) for `2021 Full Cities`. There are 2 different codes because the column and row format is different for the `2021 Full Cities` and `2022 Full Cities` files provided.
+
+### Fine-tuning Pre-trained Models for Embeddings Extraction
+
+#### Cross-validation
+
+The methods used are based of the following tutorials:
 - https://www.tensorflow.org/tutorials/keras/text_classification
 - https://www.tensorflow.org/tutorials/keras/text_classification_with_hub
 
-O código se encontra no arquivo [cross_validation.ipynb](cross_validation.ipynb). Realizando uma busca por parâmetros e modelos ótimos com validação cruzada, foi obtida a tabela abaixo:
+The cross-validation code can be found in [cross_validation.ipynb](cross_validation.ipynb). Running the code and searching for optimal parameters, the following table was obtained:
 
-| input_column   | model_type   |   hidden_neurons |   score |
-|:---------------|:-------------|-----------------:|--------:|
-| desc           | nnlm128      |                0 |  0.6597 |
-| desc           | nnlm128      |               32 |  0.6633 |
-| desc           | nnlm128      |               64 |  0.6702 |
-| desc           | use          |                0 |  0.6597 |
-| desc           | use          |               32 |  0.6493 |
-| desc           | use          |               64 |  0.6545 |
-| title          | nnlm128      |                0 |  0.6016 |
-| title          | nnlm128      |               32 |  0.6239 |
-| title          | nnlm128      |               64 |  0.6342 |
-| title          | use          |                0 |  0.6322 |
-| title          | use          |               32 |  0.6256 |
-| title          | use          |               64 |  0.6271 |
-| title+desc     | nnlm128      |                0 |  0.7026 |
-| title+desc     | nnlm128      |               32 |  0.7165 |
-| title+desc     | nnlm128      |               64 |  0.7181 |
-| title+desc     | use          |                0 |  0.7079 |
-| title+desc     | use          |               32 |  0.6907 |
-| title+desc     | use          |               64 |  0.7028 |
+| input_column   | model_type   |   hidden_neurons |   cv_score |   cv_time |
+|:---------------|:-------------|-----------------:|-----------:|----------:|
+| title+desc     | nnlm128      |                0 |     0.8314 |       224 |
+| title+desc     | nnlm128      |               64 |     0.8237 |       223 |
+| title+desc     | use          |                0 |     0.8282 |      1209 |
+| title+desc     | use          |               64 |     0.8128 |      1242 |
 
-Temos também tabelas mais resumidas para análise de cada variável:
+The time is given in seconds and is the time necessary to run the cross-validation algorithm with that set of parameters. As was mentioned before, for these experiments, we only used the combined title and descriptions columns as input and only used pre-trained models + fine-tuning as our method. Variations on the number of hidden neurons in the last fully-connected layer and the model type were kept. The number of epochs for each combination was set empirically. There are also two smaller tables for the model type:
 
-| input_column   |   score |
-|:---------------|--------:|
-| desc           |  0.6595 |
-| title          |  0.6241 |
-| title+desc     |  0.7064 |
+| model_type   |   cv_score |   cv_time |
+|:-------------|-----------:|----------:|
+| nnlm128      |     0.8276 |     223.5 |
+| use          |     0.8205 |    1225.5 |
 
-Pode-se observar que a variável com maior impacto no desempenho foi a coluna escolhida como entrada do modelo. Ao utilizar informações de ambos o título e a descrição do projeto, pode-se obter desempenhos melhores do que usando cada um separadamente.
+And hidden neurons:
 
-| model_type   |   score |
-|:-------------|--------:|
-| nnlm128      |  0.6656 |
-| use          |  0.6611 |
+|   hidden_neurons |   cv_score |   cv_time |
+|-----------------:|-----------:|----------:|
+|                0 |     0.8298 |     716.5 |
+|               64 |     0.8183 |     732.5 |
 
-No caso dos modelos, ambos [NNLM](https://tfhub.dev/google/nnlm-en-dim128-with-normalization/2) e [USE](https://tfhub.dev/google/universal-sentence-encoder/4), disponíveis no TensorFlow Hub, tiveram resultados promissores usando o título + descrição do projeto como entrada do modelo.
+Notice that the models, with or without neurons in the last fully-connected layer, offer similar performance, but with the [NNLM](https://tfhub.dev/google/nnlm-en-dim128-with-normalization/2) architecture offering much faster training (and inference) times than the [USE](https://tfhub.dev/google/universal-sentence-encoder/4) architecture. It's difficult to make other conclusions since the accuracy difference is so small and the dataset is also small.
 
-| hidden_neurons   |   score |
-|:-----------------|--------:|
-|                0 |  0.6606 |
-|               32 |  0.6615 |
-|               64 |  0.6678 |
+In the end, on average and on a imbalanced dataset, the `NNLM` model achieved `83.14%` cross-validation accuracy, indicating promising results and that tests with a larger dataset and perhaps a different model could achieve even better results. What also needs to be address to make sure the model performs well is create a separate test set that is independent from the ones used in training. This could evaluate better the model generalization skills.
 
-O uso de uma camada intermediária entre as features e a saída parece se mostrar um bom aditivo, mas com um variação tão pequena de acurácia num dataset tão pequeno, é difícil tirar conclusões sólidas sem testes futuros. O número de épocas de treinado foi escolhido empiricamente e resultados melhores podem ser obtidos fazendo um posterior ajuste fino destes parâmetros e com uma base maior.
+#### Training and Testing
 
-Infelizmente, o tamanho da base depois de limpeza foi de apenas 291 amostras, que limita as afirmações que podemos fazer quanto à possibilidade de usar IA no problema, mas um resultado próximo de 70% em validação cruzada indica que é uma boa ideia a realização de testes futuros com uma base de dados maior.
+To be able to conclude with more certainty that a trained model has good performance, instead of cross-validation, a model was trained using the best parameter combination and was tested against a test split of the dataset. The code can be found in [train_model.ipynb](train_model.ipynb). The proportion used to split the dataset into train, test and validation was `70:15:15`.
 
-### Extração manual de tokens do texto para extração de features
+The same data processing is used and an `NNLM` pre-trained model with no intermediate FC layer at the end was used. The model performance can seen on the table below:
 
-As técnicas utilizadas se baseiam nos tutoriais a seguir:
-- https://www.tensorflow.org/text/guide/word_embeddings?hl=en
-- https://developers.google.com/machine-learning/guides/text-classification?hl=en
+|       |    acc |
+|:------|-------:|
+| train | 0.9955 |
+| val   | 0.8232 |
+| test  | 0.7778 |
 
-Novamente, o código se encontra no arquivo [cross_validation.ipynb](cross_validation.ipynb). Realizando uma busca por parâmetros ótimos com validação cruzada, foi obtida a tabela abaixo:
+Since the dataset is small, it would be hard for a model to achieve similar train, validation and test accuracy, especially since overfitting can easily happen, and it leads to lack of generalization skills for the model. That said, while the model got close to overfitting with `99.55%` train accuracy and a lower `82.62%` validation accuracy, good generalization was achieved with `77.78%` test accuracy, which is reasonably close to the cross-validation accuracy of `83.14%`.
 
-| input_column   | model_type   | num_features   |   score |
-|:---------------|:-------------|:---------------|--------:|
-| desc           | mlp          | 100            |  0.2923 |
-| desc           | mlp          | 250            |  0.3992 |
-| desc           | mlp          | all            |  0.1855 |
-| desc           | rf           | 100            |  0.5157 |
-| desc           | rf           | 250            |  0.4744 |
-| desc           | rf           | all            |  0.1650 |
-| desc           | xgb          | 100            |  0.4575 |
-| desc           | xgb          | 250            |  0.4848 |
-| desc           | xgb          | all            |  0.4302 |
-| title          | mlp          | 100            |  0.4022 |
-| title          | mlp          | 250            |  0.4403 |
-| title          | mlp          | all            |  0.3371 |
-| title          | rf           | 100            |  0.4299 |
-| title          | rf           | 250            |  0.3542 |
-| title          | rf           | all            |  0.2891 |
-| title          | xgb          | 100            |  0.3439 |
-| title          | xgb          | 250            |  0.2749 |
-| title          | xgb          | all            |  0.2991 |
-| title+desc     | mlp          | 100            |  0.3062 |
-| title+desc     | mlp          | 250            |  0.4713 |
-| title+desc     | mlp          | all            |  0.2234 |
-| title+desc     | rf           | 100            |  0.5982 |
-| title+desc     | rf           | 250            |  0.5742 |
-| title+desc     | rf           | all            |  0.2065 |
-| title+desc     | xgb          | 100            |  0.5568 |
-| title+desc     | xgb          | 250            |  0.5603 |
-| title+desc     | xgb          | all            |  0.4367 |
+In the previous research project, the best cross-validation accuracy achieved with a dataset with 291 samples was `71.81%`. Now, with 1560 samples, an accuracy of `83.14%` was achieved using the same parameters. The higher cross-validation and model training scores indicate that dataset and model improvements could be made in a future research project and with a larger dataset, more accuracy and more generalization skills can be achieved.
 
-Novamente, agrupando as variáveis e usando a média das acuŕacias:
+### ChatGPT for Project Web Page Classification
 
-| input_column   |   score |
-|:---------------|--------:|
-| desc           |  0.3783 |
-| title          |  0.3523 |
-| title+desc     |  0.4371 |
-
-Novamente, se observa que o uso do título + descrição do projeto gera modelos mais performáticos.
-
-| model_type   |   score |
-|:-------------|--------:|
-| mlp          |  0.3397 |
-| rf           |  0.4008 |
-| xgb          |  0.4271 |
-
-| num_features   |   score |
-|:---------------|--------:|
-| 100            |  0.4336 |
-| 250            |  0.4482 |
-| all            |  0.2858 |
-
-Podemos notar que os resultados se mostram piores do que no caso anterior. Foram usados modelos mais comuns de machine learning (MLP, Random Forests e XGBoost) visto que a extração manual de features não gera entradas tão complexas quanto o uso completo do texto. Isso possivelmente se deve à dificuldade de gerar algoritmos de tokenização e escolha de features que envolvem processamento manual dos dados, ao invés de se utilizar um modelo pré-treinado como extrator de features, que é uma solução não só mais simples como mais performática. Uma desvantagem é que o uso de GPU é mais recomendado quando se utiliza um modelo pré-treinado robusto e complexo.
-
-Novamente cabe observar que o número de amostras é pequeno e que é difícil tirar conclusões, mas muito possivelmente este é um caminho que não vale a pena ser perseguido.
-
-### Uso de ChatGPT para classificação de páginas de projetos em categorias
-
-O uso da ferramenta não foi investigado completamente a fundo visto que algumas partes da ferramente que podem ser mais promissoras são pagas, mas as queries abaixo mostram que há grande potencial em investigar essa linha.
+ChatGPT's use was not deeply research seen as the most relevant parts of the tool are paid. Still, the following queries show that there is great potential in investigating this approach.
 
 ![Query ChatGPT 1](imgs/chatgptquery1.jpeg)
 ![Query ChatGPT 2](imgs/chatgptquery2.jpeg)
 
-Conclusão e Trabalhos Futuros
+## Conclusion and Future Work
 
-Possibilidades:
+Possibilities:
 
-- Expansão do dataset (incluindo técnicas de data augmentation). Para obter conclusões mais certeiras sobre a possibilidade de uso de IA no problema é imprescindível o aumento da base de dados. O uso de IA é acometido pelo problema da dimensionalidade: são necessários muitos dados para geração de modelos performáticos e até mesmo para dizer se o uso de IA é possível ou não no problema. [Técnicas de data augmentation possíveis](https://neptune.ai/blog/data-augmentation-nlp) incluem traduzir os textos de um idioma para outro e depois do outro idioma para o original para que sejam criadas frases ligeramente diferentes. Além disso, palavras escolhidas aleatoriamente podem ser substituídas pro sinônimos para aumentar o banco artificialmente.
+- Expand the dataset (which could include data augmentation techniques). To get more solid conclusions about the use of AI on the problem it is imperative to enlarge the database. When using AI, one is be affected by the "curse of dimensionality": a large amount of data is needed to apply AI to a given problem. [Possible data augmentation techniques](https://neptune.ai/blog/data-augmentation-nlp) include translate the text back and forth to another language so that phrases are slightly different. Also, words can be chosen at random to be replaced by synonyms.
 
-- Modelos pré-treinados servindo de extratores de features. Conforme observado nas tabelas, modelos como NNLM ou USE se mostraram bons extratores de features, conseguindo perto de 70% de acurácia antes de overfitting acontecer no treinamento. Com uma base de dados maior, é possível atingir ainda melhores resultados.
+- Pre-trained models as embeddings extractors. As seen on the tables previously, models such as `NNLM` and `USE` are good feature extractors, allowing for 83% accuracy in cross-validation before overfitting.
 
-- Modelos treinados do zero a partir de features selecionadas. Estas foram as soluções que envolveram maior processamento manual (e elaboração manual do processo de extração) e que mostraram menor resultado. O maior poder do uso de IA é justamente na eliminação da etapa de processamento manual, e isso é indicado pelo melhores resultados obtidos com modelos pré-treinados.
-
-- Soluções gratuitas ou pagas envolvendo ChatGPT. Como observado em algumas queries, a ferramenta ChatGPT da OpenAI oferece bastante potencial, mas é necessário entender em pesquisa futura que soluções gratuitas são possíveis e quais soluções pagas oferecem bom custo benefício. Existem opções como gerar [embeddings a partir de textos (ou tokens)](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings) com a ferramenta ou realizar [fine-tuning dos modelos disponíveis na API](https://platform.openai.com/docs/guides/fine-tuning), mas ambas são opções pagas. Se pesquisas com o uso da ferramentas forem feitas, é possível até investigar se a ferramenta consegue trabalhar com uma página inteira de texto (ou somente com o link) e partir disso gerar classificações relevantes.
+- Free or paid solutions involving ChatGPT. As noted on the queries shown above, ChatGPT from OpenAI offers good potential, but before diving in it's dvised to search for other free and paid services that could offer better cost benefit. There are options such as [extracting embeddings from text (or tokens)](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings) or [fine-tuning available models](https://platform.openai.com/docs/guides/fine-tuning) but both are paid options. It should also be investigated if ChatGPT can work with whole web pages (or even only the URL) and from the results create meaningful classifications.
