@@ -73,7 +73,7 @@ The methods used are based of the following tutorials:
 
 The cross-validation code can be found in [cross_validation.ipynb](cross_validation.ipynb). Running the code and searching for optimal parameters, the following table was obtained:
 
-| Model type   |   Hidden neurons |   CV score |   CV time | Trainable params   |
+| model type   |   hidden neurons |   CV score |   CV time |   trainable params |
 |:-------------|-----------------:|-----------:|----------:|-------------------:|
 | nnlm50       |                0 |     0.8122 |        66 |        48.19 ⋅ 10⁶ |
 | nnlm50       |               32 |     0.8077 |        66 |        48.19 ⋅ 10⁶ |
@@ -86,7 +86,7 @@ The cross-validation code can be found in [cross_validation.ipynb](cross_validat
 
 The time is given in seconds and is the time necessary to run an iteration (training) of the cross-validation algorithm with that set of parameters. As was mentioned before, for these experiments, we only used the combined title and descriptions columns as input and only used pre-trained models + fine-tuning. Variations on the number of hidden neurons in the last fully-connected layer and the model type were kept, with the inclusion of the multilingual model this time. The number of epochs for each combination was set empirically to avoid overfitting. There is also a smaller table for the model type:
 
-| model_type   |   cv_score |   cv_time | trainable_params   |
+| model type   |   CV score |   CV time |   trainable params |
 |:-------------|-----------:|----------:|-------------------:|
 | nnlm128      |    0.8212  |      60.5 |       124.65 ⋅ 10⁶ |
 | nnlm50       |    0.80995 |      66   |        48.19 ⋅ 10⁶ |
@@ -103,19 +103,23 @@ To be able to conclude with more certainty that a trained model has good perform
 
 The same data processing for the cross-validation is used and a `USE-MULTI` pre-trained model with an FC layer with 64 neurons at the end was used. The model performance can seen on the table below:
 
-| Set   | Accuracy |
+| set   | accuracy |
 |:------|---------:|
-| train |   0.9899 |
-| val   |   0.859  |
-| test  |   0.7906 |
+| train |   0.9982 |
+| val   |   0.8462 |
+| test  |   0.7949 |
 
-Since the dataset is small, it would be hard for a model to achieve similar train, validation and test accuracy, especially since overfitting can easily happen, and it leads to lack of generalization skills for the model. That said, while the model got close to overfitting with `98.99%` train accuracy and a lower `85.90%` validation accuracy, good generalization was achieved with `79.06%` test accuracy, which is reasonably close to the cross-validation accuracy of `82.22%`.
+The training graph is given below:
+
+![Training Graph](imgs/graph.png)
+
+Since the dataset is small, it would be hard for a model to achieve similar train, validation and test accuracy, especially since overfitting can easily happen, and it leads to lack of generalization skills for the model. That said, while the model got close to overfitting with `99.82%` train accuracy and a lower `84.62%` validation accuracy, good generalization was achieved with `79.49%` test accuracy, which is reasonably close to the cross-validation accuracy of `82.22%`.
 
 We can also check the confusion matrix for the trained model:
 
 ![Confusion Matrix](imgs/cm.png)
 
-From the matrix we can see that the model struggles to differentiate between the `buildings` and `energy efficiency` areas and to a lesser degree between `energy efficiency` and `renewable energy`. The model has good assertiveness on the `transport`, `waste management` and `water management` areas. 
+From the matrix we can see that the model struggles to differentiate between the `buildings` and `energy efficiency` areas and to a lesser degree between `energy efficiency` and `renewable energy`. The model has good assertiveness on the `transport`, `waste management` and `water management` areas.
 
 In the previous research project, the best cross-validation accuracy achieved with a dataset with 291 samples was `71.81%`. Now, with 1560 samples, an accuracy of `82.22%` was achieved using old and new parameters. The higher cross-validation and model training scores indicate that dataset and model improvements could be made in a future research project and with a larger dataset, more accuracy and more generalization skills can be achieved.
 
