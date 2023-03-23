@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# project related
+logs/
+models/
+project-hunter-379918-694c8224f026.json
