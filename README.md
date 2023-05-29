@@ -2,7 +2,7 @@
 
 In this research the problem of classifying projects into categories based on title and description was approached and techniques to solve the problem were investigated. The main technology used was NLP -- natural language processing.
 
-Also, results from the previous [experiments](old/README.md) were used. Mainly:
+Also, results from the previous experiments were used. Mainly:
 - Using the project's title and description combined gave the best results;
 - Using fine-tuned pre-trained neural networks gave the best results;
 - To showcase the model's potential, the dataset should be as large and balanced as possible.
@@ -48,20 +48,20 @@ With these answers, our research went deeper in investigating NLP techniques for
 
 ### Exploring and Cleaning the Dataset
 
-Samples lacking data in the title, description or area columns were removed. Also, preliminary tests showed that using all available areas hurt performance due to the severe imbalance of classes. So, for our tests, only areas with more than 100 samples were used. Samples with title or description too short were removed. This results in a dataset with 1560 samples. The cleaning resulted in the following sample count for each area:
+Samples lacking data in the title, description or area columns were removed. Also, preliminary tests showed that using all available areas hurt performance due to the severe imbalance of classes. So, for our tests, only areas with more than 100 samples were used. Samples with title or description too short were removed. This results in a dataset with 1158 samples. The cleaning resulted in the following sample count for each area:
 
-| area             |   sample count |
-|:-----------------|---------------:|
-| transport        |            347 |
-| waste management |            315 |
-| water management |            269 |
-| energy effiency  |            228 |
-| renewable energy |            224 |
-| buildings        |            177 |
+| area              |   sample_count |
+|:------------------|---------------:|
+| transport         |            261 |
+| waste management  |            199 |
+| renewable energy  |            196 |
+| energy efficiency |            178 |
+| water management  |            169 |
+| buildings         |            155 |
 
 As for the models, we used three english-only models and a multilingual model. For the english model, a language classifier was used to find the non-english samples and Google Cloud Translation API was used to translate the texts to english.
 
-The code for processing data can be found in [data_processing_cdp.ipynb](data_processing_cdp.ipynb) for `2022 Full Cities` and [data_processing_es.ipynb](data_processing_es.ipynb) for `2021 Full Cities`. There are 2 different scripts because the column and row format is different for the `2021 Full Cities` and `2022 Full Cities` files provided.
+The code for data processing can be found in [data_processing_cdp.ipynb](data_processing_cdp.ipynb) for `2022 Full Cities`.
 
 ### Fine-tuning Pre-trained Models for Embeddings Extraction
 
@@ -76,36 +76,36 @@ The methods used are based of the following guides:
 
 Cross-validation is mostly used when trying to determine which machine learning or deep learning method will give the best results for our problems. Additionaly, cross-validation can be used to grid-search the optimal parameters for a specific model.
 
-At first, cross-validation was used to determine the performance of applying transfer-learning to certain pre-trained models in Keras and PyTorch. Transfer-learning consists of adding a new FC head following the embeddings and train the head with the base model frozen. For the Keras models, the code can be found in [cross_validation_tf.ipynb](cross_validation_tf.ipynb). The `tensorflow-hub` library was used to download the models. For these experiments, we only used the combined title and descriptions columns as input and only used pre-trained models + transfer-learning. Further on fine-tuning will evaluated on top of transfer-learning. Variations on the model type were kept but the hidden neurons on the last FC layer were fixed for each model type, as each has a different size for the embeddings vector. The number of neurons was given by `round(sqrt(len(embs)))`. This time, multilingual models were included alongside the english-only models. The number of epochs for each combination was set empirically to avoid overfitting. For the Keras models, the following table was obtained:
+At first, cross-validation was used to determine the performance of applying transfer-learning to certain pre-trained models in Keras and PyTorch. Transfer-learning consists of adding a new FC head following the embeddings and train the head with the base model frozen. For the Keras models, the code can be found in [cross-validation_transfer-learning.ipynb](cross-validation_transfer-learning.ipynb). The `tensorflow-hub` library was used to download the models. For these experiments, we only used the combined title and descriptions columns as input and only used pre-trained models + transfer-learning. Further on fine-tuning will evaluated on top of transfer-learning. Variations on the model type were kept but the hidden neurons on the last FC layer were fixed for each model type, as each has a different size for the embeddings vector. The number of neurons was given by `round(sqrt(len(embs)))`. This time, multilingual models were included alongside the english-only models. The number of epochs for each combination was set empirically to avoid overfitting. For the Keras models, the following table was obtained:
 
-| model type   |   hidden neurons |   cv score |   params |
-|:-------------|-----------------:|-----------:|---------:|
-| nnlm128      |               12 |     0.7699 |    124 M |
-| use          |               24 |     0.8013 |    256 M |
-| use-multi    |               24 |     0.8058 |     68 M |
+| model_type   |   hidden_neurons |   cv_score | params   |
+|:-------------|-----------------:|-----------:|:---------|
+| nnlm128      |               12 |     0.7306 | 124 M    |
+| use          |               24 |     0.7504 | 256 M    |
+| use-multi    |               24 |     0.7685 | 68 M     |
 
 The [USE](https://tfhub.dev/google/universal-sentence-encoder/4) architecture is shown to have better accuracy, with the [USE multilingual](https://tfhub.dev/google/universal-sentence-encoder-multilingual/3) model even showing slightly better accuracy but with less than 1/3 of the parameters of the english-only model. The [NNLM](https://tfhub.dev/google/nnlm-en-dim128-with-normalization/2) architecture offered much faster training (and inference) times but with an intermediate number of parameters and lower accuracy. Since real-time execution is not a requirement, inference time is not a problem. It's difficult to make any other conclusions since the accuracy difference is so small as is the dataset.
 
-For the PyTorch models, the code can be found in [cross_validation_st.ipynb](cross_validation_st.ipynb), and the `sentence-transformers` library was used as a source for the models. The same procedure described above was employed, and the following table was obtained:
+For the PyTorch models, the code can be found in [cross-validation_sentence-transformers.ipynb](cross-validation_sentence-transformers.ipynb), and the `sentence-transformers` library was used as a source for the models. The same procedure described above was employed, and the following table was obtained:
 
-| model type   |   hidden neurons |   cv score |   params |
-|:-------------|-----------------:|-----------:|---------:|
-| duse         |               24 |     0.7827 |    135 M |
-| labse        |               28 |     0.7833 |    471 M |
-| minilm       |               20 |     0.7942 |    117 M |
-| mpnet        |               28 |     0.8147 |    278 M |
+| model_type   |   hidden_neurons |   cv_score | params   |
+|:-------------|-----------------:|-----------:|:---------|
+| duse         |               24 |     0.7668 | 135 M    |
+| labse        |               28 |     0.7643 | 471 M    |
+| minilm       |               20 |     0.7418 | 117 M    |
+| mpnet        |               28 |     0.7789 | 278 M    |
 
-The [DUSE](https://huggingface.co/sentence-transformers/distiluse-base-multilingual-cased-v1) model is a distilled USE architecture, and contain less parameters than the original architecture. The variation chosen is multilingual. [LaBSE](https://huggingface.co/sentence-transformers/LaBSE), [MiniLM](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) and [MPNet](https://huggingface.co/sentence-transformers/paraphrase-multilingual-mpnet-base-v2) are other architectures with good performance on multilingual tasks and most are based on the [Sentence-BERT](https://arxiv.org/abs/1908.10084) architecture. The MPNet models showed the best accuracy, beating the USE-MULTI models but with 4x more parameters. The other transformer models had lower performance than USE-MULTI.
+The [DUSE](https://huggingface.co/sentence-transformers/distiluse-base-multilingual-cased-v1) model is a distilled USE architecture, and contain less parameters than the original architecture. The variation chosen is multilingual. [LaBSE](https://huggingface.co/sentence-transformers/LaBSE), [MiniLM](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) and [MPNet](https://huggingface.co/sentence-transformers/paraphrase-multilingual-mpnet-base-v2) are other architectures with good performance on multilingual tasks and most are based on the [Sentence-BERT](https://arxiv.org/abs/1908.10084) architecture. The MPNet models showed the best accuracy, beating the USE-MULTI models but with 4x more parameters. The other transformer models had slightly lower performance than USE-MULTI.
 
-Now that transfer-learning performance is established, fine-tuning usually can be done for a few more points in accuracy. As the USE-MULTI architecture showed the best performance per parameters count, only the Keras models will be fine-tuned. The code can be found in [cross_validation_ft.ipynb](cross_validation_ft.ipynb). Fine-tuning in our case consists of applying a transfer-learning step as described above and then unfreezing the base model and training the full model with a lower learning rate and for only a few epochs to avoid overfitting, as the full model has way too many parameters for our problems.
+Now that transfer-learning and sentence transformers performance is established, fine-tuning usually can be done for a few more points in accuracy. As the USE-MULTI architecture showed the best performance per parameters count, only the Keras models will be fine-tuned. The code can be found in [cross-validation_fine-tuning.ipynb](cross-validation_fine-tuning.ipynb). Fine-tuning in our case consists of applying a transfer-learning step as described above and then unfreezing the base model and training the full model with a lower learning rate and for only a few epochs to avoid overfitting, as the full model has way too many parameters for our problems.
 
-| model_type   |   hidden_neurons |   cv_score |   params |
-|:-------------|-----------------:|-----------:|---------:|
-| nnlm128      |               12 |     0.7885 |    124 M |
-| use          |               24 |     0.8032 |    256 M |
-| use-multi    |               24 |     0.8186 |     68 M |
+| model_type   |   hidden_neurons |   cv_score | params   |
+|:-------------|-----------------:|-----------:|:---------|
+| nnlm128      |               12 |     0.747  | 124 M    |
+| use          |               24 |     0.7686 | 256 M    |
+| use-multi    |               24 |     0.7694 | 68 M     |
 
-As predicted, there are smalls gains in performance across all models, with the USE-MULTI model still taking the lead with 81.86% cross-validation accuracy, indicating promising results and that tests with a larger dataset and perhaps a different multilingual model could achieve even better results, as the USE architecture is starting to show it's age compared to other NLP architectures. What also needs to be address to make sure the model performs well is create a separate test set that is independent (not a split) from the ones used in training. This way the model generalization skills could be better evaluated.
+As predicted, there are smalls gains in performance across all models, with the USE-MULTI model still taking the lead with 76.94% cross-validation accuracy, indicating promising results and that tests with a larger dataset and perhaps a different multilingual model could achieve even better results, as the USE architecture is starting to show it's age compared to other NLP architectures. What also needs to be address to make sure the model performs well is create a separate test set that is independent (not a split) from the ones used in training. This way the model generalization skills could be better evaluated.
 
 #### Training and Testing
 
@@ -115,15 +115,15 @@ The same data processing for the cross-validation is used and a `USE-MULTI` pre-
 
 | set   | accuracy |
 |:------|---------:|
-| train |   0.9011 |
-| val   |   0.8205 |
-| test  |   0.7778 |
+| train |   0.8852 |
+| val   |   0.7931 |
+| test  |   0.7874 |
 
 The training graph is given below:
 
 ![Training Graph](imgs/graph.png)
 
-The green line separates the transfer-learning step from the fine-tuning step. Since the dataset is small, it would be hard for a model to achieve similar train, validation and test accuracy, especially since overfitting can easily happen, and it leads to lack of generalization skills for the model. That said, while the model got close to overfitting with 90.11% train accuracy and a lower 82.05% validation accuracy, good generalization was achieved with 77.78% test accuracy, which is reasonably close to the cross-validation accuracy of 81.86%, but lower as is expected from test accuracy in general.
+The green line separates the transfer-learning step from the fine-tuning step. Since the dataset is small, it would be hard for a model to achieve similar train, validation and test accuracy, especially since overfitting can easily happen, and it leads to lack of generalization skills for the model. That said, while the model got close to overfitting with 88.52% train accuracy and a lower 79.31% validation accuracy, good generalization was achieved with 78.74% test accuracy, which is reasonably close to the cross-validation accuracy of 76.94%, but a little higher.
 
 We can also check the confusion matrix for the trained model:
 
@@ -140,7 +140,7 @@ ChatGPT's use was not deeply research seen as the most relevant parts of the too
 
 ## Conclusion and Future Work
 
-In the previous research project, the best cross-validation accuracy achieved with a dataset with 291 samples was 71.81%. Now, with 1560 samples and better knowledge of the problem and NLP architectures, a cross-validation accuracy of 81.86% was achieved with a multilingual model. The higher cross-validation and model training scores indicate that dataset and model improvements could be made in a future research project and with a larger dataset, more accuracy and more generalization skills can be achieved.
+In the previous research project, the best cross-validation accuracy achieved with a dataset with 291 samples was 71.81%. Now, with 1158 samples and better knowledge of the problem and NLP architectures, a cross-validation accuracy of 76.94% was achieved with a multilingual model. The comparatively higher cross-validation and model training scores indicate that dataset and model improvements could be made in a future research project and with a larger dataset, more accuracy and more generalization skills can be achieved.
 
 Possibilities:
 
