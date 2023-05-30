@@ -2,11 +2,6 @@
 
 In this research the problem of classifying projects into categories based on title and description was approached and techniques to solve the problem were investigated. The main technology used was NLP -- natural language processing.
 
-Also, results from the previous experiments were used. Mainly:
-- Using the project's title and description combined gave the best results;
-- Using fine-tuned pre-trained neural networks gave the best results;
-- To showcase the model's potential, the dataset should be as large and balanced as possible.
-
 ## Methodology
 
 First, an ample research was made to answer certain questions such as:
@@ -27,7 +22,7 @@ Finally, results were registered on tables and possible future research was disc
 Below are the questions made (and their answers):
 
 1. What are the viable solutions, with or without AI?
-- Solutions without AI would involve plenty of manual processing of the texts and a statistical modelling of the problema, and we realized it would not be a viable path. There are various possible solutions with AI, but only some were considered: 1) fine-tuning a pre-trained model for text embedding extraction and 2) manual splitting of text into tokens for embedding generation and 3) usage of ChatGPT in some way. Please note number 2 was adressed in the previous experiment so it won't be approached here due to it's inefficiency.
+- Solutions without AI would involve plenty of manual processing of the texts and a statistical modelling of the problema, and we realized it would not be a viable path. There are various possible solutions with AI, but only some were considered: 1) fine-tuning a pre-trained model for text embedding extraction and 2) manual splitting of text into tokens for embedding generation and 3) usage of ChatGPT in some way. Number 2 was tested on early experiments but the data pre-processing was laborious and the models had around 50% accuracy, so the approach was dropped.
 
 2. What tools would be needed? Which are already built? What's the cost? Can a whole web page be used as input instead of pre-selected text?
 - For a complete solution, tools such as Snowflake can be used to host the database/dataset, Streamlit can be used to present results, AWS can be used to host models and crawling and scraping services and TensorFlow or PyTorch can be used as frameworks to train and deploy models. Snowflake and AWS are paid services. Future experiments that are out of the scope of this research would have to be made to try and use a whole page as an input to a model; we only experimented with titles and descriptions of projects that are already in a database.
@@ -48,7 +43,7 @@ With these answers, our research went deeper in investigating NLP techniques for
 
 ### Exploring and Cleaning the Dataset
 
-Samples lacking data in the title, description or area columns were removed. Also, preliminary tests showed that using all available areas hurt performance due to the severe imbalance of classes. So, for our tests, only areas with more than 100 samples were used. Samples with title or description too short were removed. This results in a dataset with 1158 samples. The cleaning resulted in the following sample count for each area:
+The project's title and description combined will be used as a single sentence input for the model. Samples lacking data in the title, description or area columns were removed. Also, preliminary tests showed that using all available areas hurt performance due to the severe imbalance of classes. So, for our tests, only areas with more than 100 samples were used. Samples with title or description too short were removed. This results in a dataset with 1158 samples. The cleaning resulted in the following sample count for each area:
 
 | area              |   sample_count |
 |:------------------|---------------:|
@@ -140,11 +135,11 @@ ChatGPT's use was not deeply research seen as the most relevant parts of the too
 
 ## Conclusion and Future Work
 
-In the previous research project, the best cross-validation accuracy achieved with a dataset with 291 samples was 71.81%. Now, with 1158 samples and better knowledge of the problem and NLP architectures, a cross-validation accuracy of 76.94% was achieved with a multilingual model. The comparatively higher cross-validation and model training scores indicate that dataset and model improvements could be made in a future research project and with a larger dataset, more accuracy and more generalization skills can be achieved.
+With 1158 samples and a good grasp of the problem and NLP architectures, a cross-validation accuracy of 76.94% was achieved with a multilingual model while a simple model training achieved 78.74% on the test set. The cross-validation and model training scores show promise but dataset and model improvements could be made in a future research project and with a larger dataset, more accuracy and more generalization skills can be achieved.
 
 Possibilities:
 
-- Expand the dataset (which could include data augmentation techniques). To get more solid conclusions about the use of AI on the problem it is imperative to enlarge the database. While 1560 samples is a good starting amount, when using AI, one will be affected by the "curse of dimensionality": a large amount of data is needed to apply AI to a given problem. [Possible data augmentation techniques](https://neptune.ai/blog/data-augmentation-nlp) include translating the text back and forth to another language so that phrases are slightly different. Also, words can be chosen at random to be replaced by synonyms.
+- Expand the dataset (which could include data augmentation techniques). To get more solid conclusions about the use of AI on the problem it is imperative to enlarge the database. While 1158 samples is a good starting amount, when using AI, one will be affected by the "curse of dimensionality": a large amount of data is needed to apply AI to a given problem. [Possible data augmentation techniques](https://neptune.ai/blog/data-augmentation-nlp) include translating the text back and forth to another language so that phrases are slightly different. Also, words can be chosen at random to be replaced by synonyms.
 
 - Exploring other multilingual sentence encoders. Some of the pre-trained models used expect text in english, which requires prior translation of titles and descriptions to english. By using a multilingual model, the translation step was bypassed, and the multilingual model matched the other models performance with relatively less trainable parameters. Other architectures could be explored for further improvement.
 
